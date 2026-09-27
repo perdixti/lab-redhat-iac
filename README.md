@@ -1,100 +1,118 @@
-# Criação de ambiente para Labs RedHat com IaC
+# Criação de ambiente para labs Red Hat com IaC
 
----
+Este laboratório cria e instala automaticamente **duas máquinas RHEL 10** para estudar para o RHCSA. Você não precisa configurar VMs, rede ou responder às telas de instalação.
 
-# Adiquira a ISO para criação das VMs
+## 1. Baixe a ISO do RHEL
 
-## RHEL 10.x gratuito para estudar para o RHCSA
+Você pode obter o RHEL gratuitamente pelo programa **Red Hat Developer Subscription for Individuals**, que permite até **16 sistemas físicos ou virtuais**, conforme os termos de uso individual. Cada aluno deve usar sua própria conta. [Condições oficiais](https://developers.redhat.com/terms-and-conditions)
 
-Você pode baixar o **RHEL 10.x original gratuitamente** pelo programa **Red Hat Developer Subscription for Individuals**. Ele permite até **16 máquinas físicas ou virtuais para uso pessoal**, o que atende ao seu laboratório de estudos. [Condições oficiais](https://www.redhat.com/en/resources/red-hat-enterprise-linux-subscription-guide)
+Para baixar:
 
-O caminho é:
+1. Crie uma conta no [Red Hat Developer](https://developers.redhat.com/register) e aceite os termos.
+2. Acesse a [página de downloads do RHEL](https://developers.redhat.com/products/rhel/download).
+3. Escolha **RHEL 10.x**, arquitetura **x86_64** para computadores Intel/AMD.
+4. Baixe a **Binary DVD ISO**, que contém os pacotes necessários à instalação.
 
-1. Crie uma conta gratuita no [Red Hat Developer](https://developers.redhat.com/register) e aceite os termos do programa.
-2. Acesse a [página oficial de downloads do RHEL](https://developers.redhat.com/products/rhel/download).
-3. Selecione uma versão **10.x**. Para um PC Intel/AMD, escolha **x86_64**.
-4. Prefira a **DVD ISO**, que contém os pacotes para instalação. A **Boot ISO** depende de acesso aos repositórios pela rede. [Downloads e tipos de imagem](https://access.redhat.com/downloads/content/rhel)
+**Não use a Boot ISO neste laboratório.**
 
-A assinatura dura **12 meses e pode ser renovada gratuitamente**. É a assinatura individual, com suporte por conta própria. [Como obter e renovar](https://access.redhat.com/solutions/4078831)
+A assinatura individual tem duração de **um ano** e pode ser renovada gratuitamente. [Como renovar](https://developers.redhat.com/articles/renew-your-red-hat-developer-program-subscription)
 
----
+## 2. Confira os requisitos
 
-# Duas máquinas RHEL para estudar
+Você precisará de:
 
-Cada máquina terá **2 GB de RAM, 2 processadores virtuais e um disco de 16 GB**. A rede será automática, usando a rede padrão do Hyper-V.
+- Windows 11 **Pro, Enterprise ou Education**.
+- Virtualização habilitada na BIOS/UEFI e processador compatível com RHEL 10.
+- Pelo menos **6 GB de RAM livres** antes de iniciar.
+- Pelo menos **42 GB livres no disco do Windows**, além do espaço ocupado pela ISO.
+- Permissão de administrador no Windows.
 
-## 1. Coloque a ISO na pasta
+O ambiente foi dimensionado para um computador com **16 GB de RAM**.
 
-Extraia o ZIP. Dentro da pasta extraída, coloque sua ISO em **pasta da iso**:
+| Recurso | rhcsa01 | rhcsa02 |
+|---|---|---|
+| Memória RAM | 2 GB | 2 GB |
+| Processadores virtuais | 2 | 2 |
+| Disco | 16 GB | 16 GB |
+| Sistema | RHEL 10 mínimo, sem interface gráfica | RHEL 10 mínimo, sem interface gráfica |
+| Usuário | `aluno` | `aluno` |
+
+A rede usa **NAT**: as VMs têm saída para a internet e o próprio Windows consegue acessá-las. IP e DNS são configurados automaticamente.
+
+## 3. Coloque a ISO na pasta
+
+Extraia o pacote ZIP e coloque sua ISO dentro de **pasta da iso**:
 
 ```text
-rhcsa-simples
+rhcsa-automatico
 ├── pasta da iso
 │   └── sua-imagem-rhel-10.iso
-├── CRIAR MAQUINAS.cmd
-├── Criar-VMs.ps1
-└── LEIA-ME.md
+├── INICIAR.cmd
+├── ACESSAR MAQUINA 1.cmd
+├── ACESSAR MAQUINA 2.cmd
+├── LEIA PRIMEIRO.md
+└── arquivos
 ```
 
-Não precisa renomear nem extrair a ISO. Deixe somente uma ISO nessa pasta: **RHEL 10 x86_64 Binary DVD**.
+Não precisa renomear nem extrair a ISO. Deixe **somente uma ISO** nessa pasta.
 
-## 2. Crie as máquinas
+## 4. Execute a instalação automática
 
-Clique com o botão direito em **CRIAR MAQUINAS.cmd → Executar como administrador**.
+1. Abra **INICIAR.cmd**.
+2. Aceite a solicitação de administrador do Windows.
+3. Escolha e confirme a senha do usuário **aluno**. Ela será usada nas duas VMs.
+4. Aguarde aparecer **PRONTO!**.
 
-O script detecta a ISO e cria **rhcsa01** e **rhcsa02**. Depois abre o Gerenciador do Hyper-V. Não precisa editar código.
+Se o Hyper-V precisar ser habilitado, o programa solicitará uma reinicialização. Reinicie o Windows e abra **INICIAR.cmd** novamente.
 
-É necessário ter Hyper-V habilitado no Windows 10/11 Pro, Enterprise ou Education. Se ainda não estiver, procure **Ativar ou desativar recursos do Windows**, marque **Hyper-V** e reinicie. Deixe pelo menos 6 GB de RAM livres e 40 GB livres no disco do Windows antes de executar.
+Durante a instalação, mantenha a janela aberta e não suspenda o computador. O programa cria as VMs, instala o RHEL, configura o usuário e o SSH, retira a mídia de instalação e verifica o acesso.
 
-## 3. Instale o RHEL
+**Não é necessário abrir o Gerenciador do Hyper-V nem selecionar opções no instalador do RHEL.**
 
-No Gerenciador do Hyper-V, faça uma máquina de cada vez:
+## 5. Consulte os dados de acesso
 
-1. Clique duas vezes em **rhcsa01** e clique em **Iniciar**. Pressione uma tecla se aparecer a mensagem para iniciar pelo DVD.
-2. Selecione **Install Red Hat Enterprise Linux**.
-3. Escolha idioma e teclado. Em software, escolha **Minimal Install**, sem interface gráfica.
-4. Em destino da instalação, selecione o disco de **16 GB** e deixe o particionamento **automático**.
-5. Em rede, **ative a conexão Ethernet** e mantenha IP e DNS automáticos. Não preencha IP manualmente.
-6. Crie o usuário **aluno**, marque **administrador** e escolha sua senha. Inicie a instalação.
-7. Ao terminar, reinicie e entre com `aluno`. Se voltar ao menu da ISO, desligue a VM pelo Hyper-V e vá a **Configurações → Unidade de DVD → Nenhum**. Depois inicie novamente.
+O programa cria **ACESSOS.html** na mesma pasta de **INICIAR.cmd**.
 
-Repita os mesmos passos em **rhcsa02**. Não execute novamente o arquivo de criação para usar as máquinas.
+Abra esse arquivo no navegador para consultar:
 
-## 4. Acesse suas máquinas
+| Nome da VM | IP | Usuário | Senha |
+|---|---|---|---|
+| rhcsa01 | Preenchido automaticamente | aluno | Senha escolhida |
+| rhcsa02 | Preenchido automaticamente | aluno | Senha escolhida |
 
-Você já pode usar o terminal pela janela da VM: abra o **Gerenciador do Hyper-V**, clique duas vezes na máquina, inicie e entre com sua senha.
+Os IPs podem mudar. Para verificar as duas máquinas e atualizar a tabela, execute **INICIAR.cmd** novamente. Isso não reinstala o laboratório existente.
 
-Se preferir acessar pelo Terminal do Windows, execute dentro de cada RHEL:
+As senhas ficam visíveis nesse arquivo. Mantenha-o no seu computador. Se trocar uma senha dentro do RHEL, a tabela não será atualizada automaticamente com a nova senha.
 
-```bash
-sudo systemctl enable --now sshd
-sudo systemctl enable --now firewalld
-sudo firewall-cmd --permanent --add-service=ssh
-sudo firewall-cmd --reload
-hostname -I
-```
+## 6. Acesse as máquinas
 
-Anote o endereço IPv4 mostrado, por exemplo `172.20.10.25`. No Terminal do Windows, use o endereço da sua VM:
+Abra:
+
+- **ACESSAR MAQUINA 1.cmd** para entrar na `rhcsa01`.
+- **ACESSAR MAQUINA 2.cmd** para entrar na `rhcsa02`.
+
+Aceite a permissão do Windows e digite a senha escolhida. Esses arquivos ligam a VM, se necessário, e descobrem seu IP atual.
+
+Você também pode usar o Terminal do Windows:
 
 ```powershell
-ssh aluno@172.20.10.25
+ssh aluno@IP_DA_VM
 ```
 
-O IP é automático e pode mudar. Quando terminar os estudos, desligue dentro de cada VM com `sudo poweroff`.
+Substitua `IP_DA_VM` pelo endereço informado em **ACESSOS.html**.
 
-**Se algo impedir a criação:** copie a mensagem da janela e me envie. Se já existem VMs chamadas rhcsa01/rhcsa02, o script para sem substituí-las. A criação da infraestrutura é automática; a instalação do RHEL segue os passos acima. Sintaxe validada no PowerShell 5.1; instalação e boot ainda dependem de teste na sua máquina.
+Para executar comandos administrativos dentro do RHEL, use `sudo`. Para desligar a VM ao terminar:
 
-Referência da rede automática: [Microsoft — Default Switch](https://techcommunity.microsoft.com/t5/virtualization/what-s-new-in-hyper-v-for-windows-10-fall-creators-update/bc-p/2267078).
+```bash
+sudo poweroff
+```
 
+Na próxima aula, basta abrir o arquivo **ACESSAR MAQUINA** correspondente.
 
+## Se aparecer um erro
 
+Copie a mensagem da janela e envie ao professor. Não apague as VMs para tentar novamente.
 
+Se já existirem máquinas chamadas **rhcsa01** ou **rhcsa02** de outro laboratório, o programa interrompe a criação sem substituí-las.
 
-
-
-
-
-
-
-
-
+**Nota para o professor:** os scripts passaram por verificações locais, mas a instalação completa ainda precisa de um piloto no Hyper-V com a ISO escolhida antes da distribuição à turma. O registro da assinatura Red Hat e as atualizações posteriores não fazem parte da instalação automática.
