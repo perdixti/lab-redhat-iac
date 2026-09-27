@@ -1,0 +1,2 @@
+Coloque somente uma ISO oficial RHEL 10.x x86_64 Binary DVD nesta pasta.
+Nao renomeie e nao extraia a ISO. A Boot ISO nao serve para este pacote.
